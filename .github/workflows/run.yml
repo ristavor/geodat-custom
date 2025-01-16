@@ -13,6 +13,12 @@ jobs:
           echo "TAG_NAME=dat-release" >> $GITHUB_ENV
         shell: bash
 
+      - name: Checkout runetfreedom/geodat2srs
+        uses: actions/checkout@v4
+        with:
+          repository: runetfreedom/geodat2srs
+          path: geodat2srs
+
       - name: Get geoip.dat relative files
         run: |
           wget https://github.com/ristavor/geoip-custom/raw/release/geoip.dat
@@ -22,6 +28,14 @@ jobs:
         run: |
           wget https://github.com/ristavor/geosite-custom/raw/release/geosite.dat
           wget https://github.com/ristavor/geosite-custom/raw/release/geosite.dat.sha256sum
+
+      - name: Generate sing-box srs
+        run: |
+          go build -C geodat2srs ./
+          ./geodat2srs/geodat2srs geoip -i ./geoip.dat -o ./tmp/sing-box/rule-set-geoip/
+          ./geodat2srs/geodat2srs geosite -i ./geosite.dat -o ./tmp/sing-box/rule-set-geosite/
+          cd ./tmp/sing-box || exit 1
+          zip -r ../../sing-box.zip *
 
       - name: Git push assets to "release" branch
         run: |
@@ -38,7 +52,7 @@ jobs:
 
           git checkout --orphan release
           
-          git add *.dat *.sha256sum
+          git add *.dat *.sha256sum sing-box.zip
           git commit -m "${{ env.RELEASE_NAME }}"
           
           git push -f -u origin release
