@@ -36,6 +36,8 @@ jobs:
           ./geodat2srs/geodat2srs geosite -i ./geosite.dat -o ./tmp/sing-box/rule-set-geosite/
           cd ./tmp/sing-box || exit 1
           zip -r ../../sing-box.zip *
+          cd ../..
+          mv ./tmp/sing-box ./sing-box
 
       - name: Git push assets to "release" branch
         run: |
@@ -52,7 +54,7 @@ jobs:
 
           git checkout --orphan release
           
-          git add *.dat *.sha256sum sing-box.zip
+          git add *.dat *.sha256sum sing-box.zip sing-box
           git commit -m "${{ env.RELEASE_NAME }}"
           
           git push -f -u origin release
