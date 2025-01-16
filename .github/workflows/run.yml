@@ -54,7 +54,7 @@ jobs:
 
           git checkout --orphan release
           
-          git add *.dat *.sha256sum sing-box.zip sing-box
+          git add *.dat *.sha256sum sing-box
           git commit -m "${{ env.RELEASE_NAME }}"
           
           git push -f -u origin release
